@@ -1,5 +1,6 @@
 import pygame
 import snake
+import gamescreengraphics
 from constants import *
 
 
@@ -11,13 +12,26 @@ class GameScreen:
 		self.game_running = False
 		self.clk = clk
 		self.snake = None
+		self.walls = []
 
 	def init_game(self):
 		self.game_running = True
 		self.snake = snake.Snake(self.disp, 300,200)
+		self.init_walls()
+
+	def init_walls(self):
+		self.walls = [
+			gamescreengraphics.Wall(self.disp, [0,0], [SCREEN_WIDTH, 0]),  # Top Wall
+			gamescreengraphics.Wall(self.disp, [0,SCREEN_HEIGHT], [SCREEN_WIDTH, 0]),  # Bottom Wall
+			gamescreengraphics.Wall(self.disp, [0, 0], [0, SCREEN_HEIGHT]), # Left Wall
+			gamescreengraphics.Wall(self.disp, [SCREEN_WIDTH, 0], [0, SCREEN_HEIGHT]) # Right Wall
+		]
 
 	def draw_screen(self):
 		self.disp.fill(COLOR_BLACK)
+		# Draw walls
+		for wall in self.walls:
+			wall.draw()
 		self.snake.draw()
 
 	def run(self):
@@ -27,6 +41,7 @@ class GameScreen:
 			event_queue = pygame.event.get()
 			# Iterate through event queue
 			self.process_events(event_queue)
+			self.check_collisions()
 			self.draw_screen()
 			pygame.display.flip()
 			self.clk.tick(30)
@@ -49,3 +64,8 @@ class GameScreen:
 					self.snake.move_left()
 				elif e.key is K_RIGHT or e.key is K_d:
 					self.snake.move_right()
+
+	def check_collisions(self):
+		for wall in self.walls:
+			if self.snake.head.rect.colliderect(wall.rect):
+				print "Collide"
