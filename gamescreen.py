@@ -24,10 +24,22 @@ class GameScreen:
 
 	def init_snake(self):
 		# Generate start coords
-		startx = random.randint(1, N_XPOSITIONS) * BLOCK_DIM
-		starty = random.randint(1, N_YPOSITIONS) * BLOCK_DIM
+		startx = random.randint(1, N_XPOSITIONS-1) * BLOCK_DIM
+		starty = random.randint(1, N_YPOSITIONS-1) * BLOCK_DIM
+
 		# Generate start direction
-		start_direction = random.sample(['l', 'r', 'u', 'd'], 1)
+		sample = ['l', 'r', 'u', 'd']
+		if starty == BLOCK_DIM:
+			sample.remove('u')
+		elif starty == (N_YPOSITIONS-1) * BLOCK_DIM:
+			sample.remove('d')
+
+		if startx == BLOCK_DIM:
+			sample.remove('l')
+		elif startx == (N_XPOSITIONS-1) * BLOCK_DIM:
+			sample.remove('r')
+
+		start_direction = random.sample(sample, 1)[0]
 		self.snake = snake.Snake(self.disp, startx, starty, start_direction)
 		self.test_block = snake.Variable
 
