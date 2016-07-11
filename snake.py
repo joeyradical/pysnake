@@ -3,29 +3,29 @@ from constants import *
 
 
 class Snake:
-	def __init__(self, disp, posx, posy):
+	def __init__(self, disp, posx, posy, startdirection):
 		self.disp = disp
 		self.head = Head(COLOR_BLACK, BLOCK_DIM, BLOCK_DIM, disp, posx, posy)
 		self.variables = []
+		self.direction = startdirection
 
 	def draw(self):
 		self.head.draw(COLOR_WHITE)
 		for var in self.variables:
 			var.draw(COLOR_WHITE)
 
-	def move_left(self):
-		self.head.update_x_coord(self.head.get_x_coord() - BLOCK_DIM)
+	def set_direction(self, direction):
+		self.direction = direction
 
-	def move_right(self):
-		self.head.update_x_coord(self.head.get_x_coord() + BLOCK_DIM)
-
-	def move_up(self):
-		self.head.update_y_coord(self.head.get_y_coord() - BLOCK_DIM)
-		print "UP"
-
-	def move_down(self):
-		self.head.update_y_coord(self.head.get_y_coord() + BLOCK_DIM)
-
+	def move(self):
+		if self.direction is "l":
+			self.head.update_x_coord(self.head.get_x_coord() - BLOCK_DIM)
+		elif self.direction is "r":
+			self.head.update_x_coord(self.head.get_x_coord() + BLOCK_DIM)
+		elif self.direction is "u":
+			self.head.update_y_coord(self.head.get_y_coord() - BLOCK_DIM)
+		elif self.direction is "d":
+			self.head.update_y_coord(self.head.get_y_coord() + BLOCK_DIM)
 
 class Block(pygame.sprite.Sprite):
 	def __init__(self, color, width, height, disp, posx, posy):
