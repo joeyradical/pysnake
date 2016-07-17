@@ -9,3 +9,6 @@ class Wall(object):
 
 	def draw(self):
 		pygame.draw.rect(self.disp, COLOR_WHITE, self.rect, 1)
+
+	def get_rect(self):
+		return self.rect()

@@ -13,7 +13,7 @@ class GameScreen:
 		self.clk = clk
 		self.snake = None
 		self.walls = []
-		self.test_block = None
+		self.field_blocks = []
 
 	def init_game(self):
 		self.game_running = True
@@ -41,7 +41,8 @@ class GameScreen:
 
 		start_direction = random.sample(sample, 1)[0]
 		self.snake = snake.Snake(self.disp, startx, starty, start_direction)
-		self.test_block = snake.Variable
+		test_block = snake.Variable(COLOR_WHITE, BLOCK_DIM, BLOCK_DIM, self.disp, 160,160)
+		self.field_blocks.append(test_block)
 
 	def init_walls(self):
 		self.walls = [
@@ -56,7 +57,10 @@ class GameScreen:
 		# Draw walls
 		for wall in self.walls:
 			wall.draw()
+		for block in self.field_blocks:
+			block.draw(COLOR_WHITE)
 		self.snake.draw()
+
 
 	def run(self):
 		self.init_game()
@@ -83,20 +87,34 @@ class GameScreen:
 					self.game_running = False
 				# If arrow key or W, A, S, or D is pressed, change direction of snake
 				elif e.key is K_DOWN or e.key is K_s:
-					self.snake.set_direction('d')
+					if self.snake.get_head_direction() is not 'u' and self.snake.get_head_direction() is not 'd':
+						self.snake.add_turn('d')
 				elif e.key is K_UP or e.key is K_w:
-					self.snake.set_direction('u')
+					if self.snake.get_head_direction() is not 'u' and self.snake.get_head_direction() is not 'd':
+						self.snake.add_turn('u')
 				elif e.key is K_LEFT or e.key is K_a:
-					self.snake.set_direction('l')
+					if self.snake.get_head_direction() is not 'l' and self.snake.get_head_direction() is not 'r':
+						self.snake.add_turn('l')
 				elif e.key is K_RIGHT or e.key is K_d:
-					self.snake.set_direction('r')
+					if self.snake.get_head_direction() is not 'l' and self.snake.get_head_direction() is not 'r':
+						self.snake.add_turn('r')
 
 
 	def check_collisions(self):
 		for wall in self.walls:
-			if self.snake.head.rect.colliderect(wall.rect):
-				print "Collide"
+			if self.snake.head.get_rect().colliderect(wall.rect):
+				self.game_running = False
+		for var in self.snake.get_variables():
+			if self.snake.head.get_rect().colliderect(var.get_rect()):
+				print "Col damage"
 
+		for block in self.field_blocks:
+			if self.snake.head.get_rect().colliderect(block.rect):
+				self.snake.collect_variable(block)
+				self.field_blocks.remove(block)
+				startx = random.randint(1, N_XPOSITIONS - 1) * BLOCK_DIM
+				starty = random.randint(1, N_YPOSITIONS - 1) * BLOCK_DIM
+				test_block = snake.Variable(COLOR_WHITE, BLOCK_DIM, BLOCK_DIM, self.disp, startx, starty)
+				self.field_blocks.append(test_block)
 	def process_game_event(self):
-		self.snake.move()
-		print self.snake.direction
+		self.snake.update()
